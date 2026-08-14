@@ -1,0 +1,316 @@
+/* ===== Bear Kitchen Design System ===== */
+
+:root {
+  /* Colors - Warm Kitchen Palette */
+  --bg: #FAF8F5;
+  --bg-alt: #F5F1EB;
+  --surface: #FFFFFF;
+  --surface-hover: #FBF9F6;
+
+  --primary: #6B5846;
+  --primary-light: #8B7355;
+  --primary-dark: #4A3D30;
+  --primary-bg: #F0EBE3;
+
+  --accent: #C8855A;
+  --accent-light: #D9A57A;
+  --accent-bg: #FAF0E8;
+
+  --text: #3D352E;
+  --text-secondary: #8B7E70;
+  --text-tertiary: #B5A99B;
+  --text-inverse: #FAF8F5;
+
+  --border: #E8E2D9;
+  --border-light: #F0EBE3;
+  --border-strong: #D4CABE;
+
+  --danger: #C75450;
+  --danger-bg: #FBEEED;
+  --success: #6B8E5A;
+  --success-bg: #EFF5EC;
+
+  /* Tag dimension colors */
+  --tag-cuisine-bg: #EEF2F8;
+  --tag-cuisine-text: #5B6B8A;
+  --tag-ingredient-bg: #EDF3EC;
+  --tag-ingredient-text: #5A7A4E;
+  --tag-flavor-bg: #FBF0EB;
+  --tag-flavor-text: #A66B4A;
+  --tag-method-bg: #F3EEF6;
+  --tag-method-text: #7A5E8A;
+  --tag-custom-bg: #F2E4BC;
+  --tag-custom-text: #8B6E2A;
+
+  /* Content space (Notion-like breathing room) */
+  --content-width: 1200px;
+  --content-pad: clamp(24px, 6vw, 80px);
+  --content-width-narrow: 720px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(61, 53, 46, 0.04);
+  --shadow-md: 0 2px 8px rgba(61, 53, 46, 0.06);
+  --shadow-lg: 0 4px 16px rgba(61, 53, 46, 0.08);
+  --shadow-xl: 0 8px 32px rgba(61, 53, 46, 0.12);
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+
+  /* Transitions */
+  --transition: 0.2s ease;
+}
+
+/* ===== Reset ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ===== Utility Classes ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--text-inverse);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--text-inverse);
+}
+
+.btn-accent:hover:not(:disabled) {
+  background-color: #B87550;
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: var(--text-inverse);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #B04A48;
+}
+
+.btn-ghost {
+  color: var(--text-secondary);
+  padding: 8px 12px;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--text);
+  background-color: var(--bg-alt);
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.btn-lg {
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ===== Form Elements ===== */
+.input, .textarea, .select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.input:focus, .textarea:focus, .select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.input::placeholder, .textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ===== Labels ===== */
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn { animation: fadeIn 0.3s ease; }
+.animate-slideUp { animation: slideUp 0.3s ease; }
+.animate-slideDown { animation: slideDown 0.3s ease; }
+.animate-scaleIn { animation: scaleIn 0.2s ease; }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  :root {
+    --content-pad: 20px;
+  }
+
+  .container {
+    padding: 0 var(--space-md);
+  }
+}
