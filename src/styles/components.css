@@ -1623,3 +1623,497 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==================================================================
+   V2.0 Ingredients / Inventory
+   Reuses existing tokens (typography, spacing, colors, buttons).
+   ================================================================== */
+
+/* 与 .recipes-page 一致：居中 + 两侧留白 */
+.ingredients-page {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding-inline: var(--content-pad);
+}
+
+/* ===== Category groups ===== */
+.inv-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.inv-group-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: var(--space-sm);
+}
+
+.inv-group-list {
+  background-color: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* ===== Item row（名称跳转编辑；数量/到期日点击即改） ===== */
+.inv-row {
+  display: block;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color var(--transition);
+}
+
+.inv-row:last-child {
+  border-bottom: none;
+}
+
+.inv-row:hover {
+  background-color: var(--surface-hover);
+}
+
+.inv-row.used-up .inv-row-name {
+  color: var(--text-tertiary);
+}
+
+.inv-row-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+  width: 100%;
+}
+
+.inv-row-name {
+  justify-self: start;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inv-row-name:hover {
+  color: var(--accent);
+}
+
+/* 数量居中：grid 中间列自然水平居中于整行 */
+.inv-row-qty-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* 到期日靠右：grid 第三列靠右对齐 */
+.inv-row-date-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.inv-row-qty-btn,
+.inv-row-date {
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  margin: -2px -6px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.inv-row-qty-btn:hover,
+.inv-row-date:hover {
+  background-color: var(--primary-bg);
+  color: var(--accent);
+}
+
+.inv-row-qty-zero {
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.inv-row-date {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.inv-row-date-expired {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.inv-row-date-soon {
+  color: #A66B4A;
+  font-weight: 600;
+}
+
+/* 行内编辑输入框 */
+.inv-row-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inv-row-edit-input {
+  width: 72px;
+  padding: 2px 8px;
+  font-size: 14px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text);
+}
+
+.inv-row-edit-input.inv-row-edit-date {
+  width: 138px;
+}
+
+.inv-row-edit-ok {
+  background: none;
+  border: none;
+  color: var(--success);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ===== Badges ===== */
+.inv-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.inv-badge-muted {
+  background-color: var(--bg-alt);
+  color: var(--text-secondary);
+}
+
+.inv-badge-ok {
+  background-color: var(--primary-bg);
+  color: var(--text-secondary);
+}
+
+.inv-badge-soon {
+  background-color: #FBF0EB;
+  color: #A66B4A;
+}
+
+.inv-badge-expired {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* ===== Category manager ===== */
+.inv-cat-manager {
+  background-color: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.inv-cat-manager-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.inv-cat-manager-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.inv-cat-manager-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.inv-cat-manager-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.inv-cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-bg);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.inv-cat-chip-edit,
+.inv-cat-chip-delete {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inv-cat-chip-edit:hover {
+  color: var(--accent);
+}
+
+.inv-cat-chip-delete:hover {
+  color: var(--danger);
+}
+
+.inv-cat-add {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.inv-cat-add:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.inv-cat-rename {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inv-cat-rename-input {
+  width: 110px;
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+.inv-cat-rename-ok {
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.inv-transfer-select {
+  margin: var(--space-sm) 0 var(--space-md);
+}
+
+/* ===== Add/Edit form ===== */
+.inv-form-page {
+  max-width: var(--content-width-narrow);
+  margin: 0 auto;
+  padding-inline: var(--content-pad);
+  padding-bottom: var(--space-2xl);
+  box-sizing: border-box;
+}
+
+.inv-form {
+  background-color: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.inv-form-cat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+/* 分类字段头部：label + 管理分类按钮 */
+.inv-form-field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+/* 表单内嵌的分类管理面板 */
+.inv-form .inv-cat-manager {
+  margin-top: var(--space-md);
+  margin-bottom: 0;
+}
+
+.inv-form-error {
+  color: var(--danger);
+  font-size: 13px;
+  background-color: var(--danger-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.inv-form-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* ===== 数量 + 单位复合输入（方案 C：数字框内嵌单位下拉） ===== */
+.inv-qty-combo {
+  display: flex;
+  align-items: stretch;
+  width: 180px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  overflow: hidden;
+}
+
+.inv-qty-combo:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.inv-qty-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  padding: 10px 10px 10px 14px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.inv-qty-divider {
+  width: 1px;
+  background-color: var(--border-light);
+}
+
+.inv-qty-unit {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  padding: 10px 8px 10px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-tertiary) 50%),
+    linear-gradient(135deg, var(--text-tertiary) 50%, transparent 50%);
+  background-position: calc(100% - 10px) calc(50% + 1px), calc(100% - 6px) calc(50% + 1px);
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  padding-right: 20px;
+}
+
+/* 编辑页批次标题行 */
+.inv-batch-label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* 编辑页批次行内紧凑单位下拉（替代原来的纯文字单位 span） */
+.inv-batch-unit-select {
+  min-width: 64px;
+  max-width: 76px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 6px 20px 6px 8px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-tertiary) 50%),
+    linear-gradient(135deg, var(--text-tertiary) 50%, transparent 50%);
+  background-position: calc(100% - 9px) calc(50% + 1px), calc(100% - 5px) calc(50% + 1px);
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+
+.inv-batch-unit-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ===== 编辑页批次列表（每批：数量 + 单位 + 到期日 + 删除） ===== */
+.inv-batch-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.inv-batch-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.inv-batch-qty,
+.inv-batch-date {
+  min-width: 0;
+}
+
+.inv-batch-remove {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 15px;
+  line-height: 1;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition);
+}
+
+.inv-batch-remove:hover {
+  color: var(--danger);
+}
+
+.inv-batch-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: var(--space-xs);
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .inv-row {
+    padding: 10px 14px;
+  }
+
+  .inv-row-main {
+    gap: var(--space-sm);
+  }
+
+  .inv-form {
+    padding: var(--space-md);
+  }
+}

@@ -6,6 +6,7 @@ import { RecipeDetailPage } from '@/pages/RecipeDetailPage';
 import { RecipeFormPage } from '@/pages/RecipeFormPage';
 import { PlanPage } from '@/pages/PlanPage';
 import { IngredientsPage } from '@/pages/IngredientsPage';
+import { IngredientFormPage } from '@/pages/IngredientFormPage';
 
 export default function App() {
   return (
@@ -20,6 +21,8 @@ export default function App() {
             <Route path="/recipes/:id/edit" element={<RecipeFormPage />} />
             <Route path="/plan" element={<PlanPage />} />
             <Route path="/ingredients" element={<IngredientsPage />} />
+            <Route path="/ingredients/new" element={<IngredientFormPage />} />
+            <Route path="/ingredients/:id/edit" element={<IngredientFormPage />} />
             <Route path="*" element={<Navigate to="/recipes" replace />} />
           </Routes>
         </Layout>

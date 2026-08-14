@@ -5,3 +5,8 @@ dist
 *.png
 !public/*.png
 !public/*.svg
+.dev-server.log
+.dev-server.pid
+.env
+dist-node-types
+tsconfig.tsbuildinfo
