@@ -17,11 +17,36 @@ function notifyLibraryChanged(): void {
   window.dispatchEvent(new Event(LIBRARY_CHANGED_EVENT));
 }
 
+/**
+ * Safe localStorage.setItem — never throws.
+ * Returns true on success, false on failure (quota exceeded,
+ * storage disabled, private mode, etc.). Failure is logged so it is
+ * diagnosable while callers stay in control of UX handling.
+ */
+function safeSetItem(key: string, value: string): boolean {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    console.warn(`[bear-kitchen] localStorage 写入失败 (${key}):`, error);
+    return false;
+  }
+}
+
+/** Safe localStorage.getItem — never throws. */
+function safeGetItem(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
 // ===== Recipe Storage =====
 
 export function loadRecipes(): Recipe[] {
   try {
-    const data = localStorage.getItem(RECIPES_KEY);
+    const data = safeGetItem(RECIPES_KEY);
     if (!data) return [];
     return JSON.parse(data) as Recipe[];
   } catch {
@@ -29,8 +54,9 @@ export function loadRecipes(): Recipe[] {
   }
 }
 
-export function saveRecipes(recipes: Recipe[]): void {
-  localStorage.setItem(RECIPES_KEY, JSON.stringify(recipes));
+/** Returns true if persisted, false if localStorage write failed. */
+export function saveRecipes(recipes: Recipe[]): boolean {
+  return safeSetItem(RECIPES_KEY, JSON.stringify(recipes));
 }
 
 /** Rewrite tag ids across all recipes (rename). Silently persists. */
@@ -66,7 +92,7 @@ function removeTagRefs(ids: string[]): void {
 
 export function loadCustomTags(): Tag[] {
   try {
-    const data = localStorage.getItem(CUSTOM_TAGS_KEY);
+    const data = safeGetItem(CUSTOM_TAGS_KEY);
     if (!data) return [];
     return JSON.parse(data) as Tag[];
   } catch {
@@ -74,8 +100,9 @@ export function loadCustomTags(): Tag[] {
   }
 }
 
-export function saveCustomTags(tags: Tag[]): void {
-  localStorage.setItem(CUSTOM_TAGS_KEY, JSON.stringify(tags));
+/** Returns true if persisted, false if localStorage write failed. */
+export function saveCustomTags(tags: Tag[]): boolean {
+  return safeSetItem(CUSTOM_TAGS_KEY, JSON.stringify(tags));
 }
 
 export function addCustomTag(name: string): Tag | null {
@@ -92,7 +119,7 @@ export function addCustomTag(name: string): Tag | null {
     isCustom: true,
   };
   tags.push(tag);
-  saveCustomTags(tags);
+  if (!saveCustomTags(tags)) return null;
   notifyLibraryChanged();
   return tag;
 }
@@ -105,7 +132,7 @@ export function renameCustomTag(id: string, newName: string): boolean {
   if (!tag) return false;
   if (tags.some((t) => t.id !== id && t.name === trimmed)) return false;
   tag.name = trimmed;
-  saveCustomTags(tags);
+  if (!saveCustomTags(tags)) return false;
   // custom tags are referenced by stable generated id -> no recipe rewrite needed
   notifyLibraryChanged();
   return true;
@@ -121,7 +148,7 @@ export function deleteCustomTag(id: string): void {
 
 export function loadTagGroups(): TagGroup[] {
   try {
-    const data = localStorage.getItem(TAG_GROUPS_KEY);
+    const data = safeGetItem(TAG_GROUPS_KEY);
     if (data) return JSON.parse(data) as TagGroup[];
   } catch {
     // fall through to defaults
@@ -129,8 +156,9 @@ export function loadTagGroups(): TagGroup[] {
   return TAG_GROUPS.map((g) => ({ ...g, tags: [...g.tags] }));
 }
 
-export function saveTagGroups(groups: TagGroup[]): void {
-  localStorage.setItem(TAG_GROUPS_KEY, JSON.stringify(groups));
+/** Returns true if persisted, false if localStorage write failed. */
+export function saveTagGroups(groups: TagGroup[]): boolean {
+  return safeSetItem(TAG_GROUPS_KEY, JSON.stringify(groups));
 }
 
 export function addDimensionTag(
@@ -143,7 +171,7 @@ export function addDimensionTag(
   const group = groups.find((g) => g.dimension === dimension);
   if (!group || group.tags.includes(trimmed)) return null;
   group.tags.push(trimmed);
-  saveTagGroups(groups);
+  if (!saveTagGroups(groups)) return null;
   notifyLibraryChanged();
   return tagId(trimmed, dimension);
 }
@@ -160,7 +188,7 @@ export function renameDimensionTag(
   if (!group || !group.tags.includes(oldName)) return null;
   if (group.tags.includes(trimmed)) return null; // name collision
   group.tags = group.tags.map((t) => (t === oldName ? trimmed : t));
-  saveTagGroups(groups);
+  if (!saveTagGroups(groups)) return null;
   const oldId = tagId(oldName, dimension);
   const newId = tagId(trimmed, dimension);
   remapTagRefs({ [oldId]: newId });
@@ -185,7 +213,7 @@ export function deleteDimensionTag(
 
 export function loadCategories(): Category[] {
   try {
-    const data = localStorage.getItem(CATEGORIES_KEY);
+    const data = safeGetItem(CATEGORIES_KEY);
     if (data) return JSON.parse(data) as Category[];
   } catch {
     // fall through to defaults
@@ -193,8 +221,9 @@ export function loadCategories(): Category[] {
   return CATEGORIES.map((c) => ({ ...c }));
 }
 
-export function saveCategories(categories: Category[]): void {
-  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+/** Returns true if persisted, false if localStorage write failed. */
+export function saveCategories(categories: Category[]): boolean {
+  return safeSetItem(CATEGORIES_KEY, JSON.stringify(categories));
 }
 
 export function addCategory(name: string): Category | null {
@@ -203,7 +232,7 @@ export function addCategory(name: string): Category | null {
   const cats = loadCategories();
   if (cats.some((c) => c.name === trimmed)) return null;
   const cat: Category = { id: generateId(), name: trimmed };
-  saveCategories([...cats, cat]);
+  if (!saveCategories([...cats, cat])) return null;
   notifyLibraryChanged();
   return cat;
 }
@@ -216,7 +245,7 @@ export function renameCategory(id: string, newName: string): boolean {
   if (!cat) return false;
   if (cats.some((c) => c.id !== id && c.name === trimmed)) return false;
   cat.name = trimmed;
-  saveCategories(cats);
+  if (!saveCategories(cats)) return false;
   // categories are referenced by stable id -> no recipe rewrite needed
   notifyLibraryChanged();
   return true;
@@ -279,9 +308,9 @@ export function getTagNamesByIds(ids: string[]): string[] {
 // ===== Initialization =====
 
 export function isInitialized(): boolean {
-  return localStorage.getItem(INIT_KEY) === 'true';
+  return safeGetItem(INIT_KEY) === 'true';
 }
 
-export function markInitialized(): void {
-  localStorage.setItem(INIT_KEY, 'true');
+export function markInitialized(): boolean {
+  return safeSetItem(INIT_KEY, 'true');
 }

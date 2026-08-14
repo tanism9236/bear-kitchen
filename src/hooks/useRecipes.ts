@@ -17,18 +17,20 @@ export function useRecipes() {
   // (independent of React state lifecycle / unmount batching)
   const recipesRef = useRef<Recipe[]>([]);
 
-  const commit = useCallback((next: Recipe[]) => {
+  const commit = useCallback((next: Recipe[]): boolean => {
     recipesRef.current = next;
-    saveRecipes(next);
-    setRecipes(next);
+    const persisted = saveRecipes(next); // never throws; false on storage failure
+    setRecipes(next); // keep in-memory state so the app keeps working
+    return persisted;
   }, []);
 
   useEffect(() => {
     let initial: Recipe[];
     if (!isInitialized()) {
       initial = createSampleRecipes();
-      saveRecipes(initial);
-      markInitialized();
+      // Only mark initialized when the sample data actually persisted —
+      // otherwise a storage failure here would wipe recipes on next load.
+      if (saveRecipes(initial)) markInitialized();
     } else {
       initial = loadRecipes();
     }
