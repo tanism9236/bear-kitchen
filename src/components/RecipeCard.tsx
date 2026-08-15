@@ -11,8 +11,7 @@ interface RecipeCardProps {
 export function RecipeCard({ recipe }: RecipeCardProps) {
   const tags = recipe.tags
     .map((id) => getTagById(id))
-    .filter((t): t is NonNullable<typeof t> => !!t)
-    .slice(0, 4);
+    .filter((t): t is NonNullable<typeof t> => !!t);
 
   return (
     <Link to={`/recipes/${recipe.id}`} className="recipe-card animate-slideUp">

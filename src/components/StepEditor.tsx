@@ -1,3 +1,4 @@
+import { useState, type DragEvent } from 'react';
 import type { RecipeStep } from '@/types';
 import { generateId } from '@/utils/id';
 
@@ -7,6 +8,9 @@ interface StepEditorProps {
 }
 
 export function StepEditor({ steps, onChange }: StepEditorProps) {
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+
   const add = () => {
     onChange([...steps, { id: generateId(), text: '' }]);
   };
@@ -19,76 +23,91 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
     onChange(steps.filter((s) => s.id !== id));
   };
 
-  const moveUp = (index: number) => {
-    if (index === 0) return;
-    const next = [...steps];
-    [next[index - 1], next[index]] = [next[index], next[index - 1]];
-    onChange(next);
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, index: number) => {
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(index));
   };
 
-  const moveDown = (index: number) => {
-    if (index === steps.length - 1) return;
+  const handleDragOver = (e: DragEvent<HTMLDivElement>, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragIndex !== null && index !== dragIndex) {
+      setOverIndex(index);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setOverIndex(null);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>, index: number) => {
+    e.preventDefault();
+    if (dragIndex === null || dragIndex === index) {
+      setDragIndex(null);
+      setOverIndex(null);
+      return;
+    }
     const next = [...steps];
-    [next[index], next[index + 1]] = [next[index + 1], next[index]];
+    const [moved] = next.splice(dragIndex, 1);
+    next.splice(index, 0, moved);
     onChange(next);
+    setDragIndex(null);
+    setOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setOverIndex(null);
   };
 
   return (
     <div className="step-editor">
       {steps.map((step, index) => (
-        <div key={step.id} className="step-row animate-fadeIn">
+        <div
+          key={step.id}
+          className={`step-row animate-fadeIn${dragIndex === index ? ' step-row-dragging' : ''}${overIndex === index && dragIndex !== null && dragIndex !== index ? ' step-row-drag-over' : ''}`}
+          draggable
+          onDragStart={(e) => handleDragStart(e, index)}
+          onDragOver={(e) => handleDragOver(e, index)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, index)}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="step-drag-handle" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
           <div className="step-number">{index + 1}</div>
           <textarea
-            className="textarea step-textarea"
+            className="step-textarea"
             placeholder={`描述步骤 ${index + 1}…`}
             value={step.text}
             onChange={(e) => update(step.id, e.target.value)}
             rows={2}
           />
-          <div className="step-actions">
-            <button
-              type="button"
-              className="step-action-btn"
-              onClick={() => moveUp(index)}
-              disabled={index === 0}
-              title="上移"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              className="step-action-btn"
-              onClick={() => moveDown(index)}
-              disabled={index === steps.length - 1}
-              title="下移"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M19 12l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              className="step-action-btn step-action-delete"
-              onClick={() => remove(step.id)}
-              title="删除"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
+          <button
+            type="button"
+            className="step-remove"
+            onClick={() => remove(step.id)}
+            title="删除"
+            aria-label="删除"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
       ))}
-      <button type="button" className="btn btn-sm btn-secondary step-add" onClick={add}>
-        + 添加步骤
+      <button type="button" className="pill-add-btn" onClick={add}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        添加步骤
       </button>
     </div>
   );

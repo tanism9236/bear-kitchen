@@ -7,18 +7,24 @@
   --surface: #FFFFFF;
   --surface-hover: #FBF9F6;
 
-  --primary: #6B5846;
-  --primary-light: #8B7355;
-  --primary-dark: #4A3D30;
+  --primary: #4A3E3D;
+  --primary-light: #5A4843;
+  --primary-dark: #3B3130;
   --primary-bg: #F0EBE3;
+
+  /* 次要标签 / 未选中 Tab（Brief 暖棕规范） */
+  --chip-bg: #F2ECE4;
+  --chip-text: #6E6259;
+  --tab-inactive: #F5F2ED;
+  --tab-active: #AD723B;
 
   --accent: #C8855A;
   --accent-light: #D9A57A;
   --accent-bg: #FAF0E8;
 
   --text: #3D352E;
-  --text-secondary: #8B7E70;
-  --text-tertiary: #B5A99B;
+  --text-secondary: #8C857B;
+  --text-tertiary: #9E958C;
   --text-inverse: #FAF8F5;
 
   --border: #E8E2D9;

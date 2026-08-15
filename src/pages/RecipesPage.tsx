@@ -131,22 +131,24 @@ export function RecipesPage() {
       </div>
 
       {/* Category Filter (横排胶囊) */}
-      <div className="filter-bar">
-        <button
-          className={`filter-chip ${categoryFilter === 'all' ? 'active' : ''}`}
-          onClick={() => setCategoryFilter('all')}
-        >
-          全部
-        </button>
-        {categories.map((cat) => (
+      <div className="filter-bar-wrap">
+        <div className="filter-bar">
           <button
-            key={cat.id}
-            className={`filter-chip ${categoryFilter === cat.id ? 'active' : ''}`}
-            onClick={() => setCategoryFilter(cat.id)}
+            className={`filter-chip ${categoryFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setCategoryFilter('all')}
           >
-            {cat.name}
+            全部
           </button>
-        ))}
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              className={`filter-chip ${categoryFilter === cat.id ? 'active' : ''}`}
+              onClick={() => setCategoryFilter(cat.id)}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tag Filter Panel (展开) */}
@@ -227,13 +229,6 @@ export function RecipesPage() {
         </div>
       )}
 
-      {/* Result Bar */}
-      <div className="result-bar">
-        <span className="filter-result-count">
-          找到 {filteredRecipes.length} 道菜
-        </span>
-      </div>
-
       {/* Recipe Grid */}
       {filteredRecipes.length > 0 ? (
         <div className="recipe-grid">
@@ -262,7 +257,9 @@ export function RecipesPage() {
 
       {/* FAB 添加菜谱 */}
       <Link to="/recipes/new" className="fab-add" title="添加菜谱" aria-label="添加菜谱">
-        +
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
       </Link>
     </div>
   );

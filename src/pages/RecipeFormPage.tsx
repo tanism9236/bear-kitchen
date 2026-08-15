@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRecipes } from '@/hooks/useRecipes';
 import { useToast } from '@/components/Toast';
@@ -14,7 +14,7 @@ export function RecipeFormPage() {
   const { id } = useParams<{ id: string }>();
   const isEdit = !!id;
   const navigate = useNavigate();
-  const { recipes, addRecipe, updateRecipe } = useRecipes();
+  const { recipes, loading, addRecipe, updateRecipe } = useRecipes();
   const { showToast } = useToast();
 
   const existingRecipe = isEdit ? recipes.find((r) => r.id === id) : undefined;
@@ -35,7 +35,32 @@ export function RecipeFormPage() {
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // If editing but recipe not found
+  // Backfill form fields when recipe data arrives asynchronously
+  // (useRecipes loads from localStorage in useEffect, so on first render
+  //  recipes is [] and existingRecipe is undefined — useState initializers
+  //  capture empty values. This effect re-populates once data is ready.)
+  useEffect(() => {
+    if (isEdit && existingRecipe) {
+      setName(existingRecipe.name);
+      setCoverImage(existingRecipe.coverImage);
+      setCategory(existingRecipe.category);
+      setTags(existingRecipe.tags);
+      setIngredients(existingRecipe.ingredients);
+      setSteps(existingRecipe.steps);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEdit, existingRecipe?.id]);
+
+  // Show loading while recipes are being fetched from storage
+  if (loading) {
+    return (
+      <div className="page-loading">
+        <div className="spinner" />
+      </div>
+    );
+  }
+
+  // If editing but recipe not found (after loading is complete)
   if (isEdit && !existingRecipe) {
     return (
       <div className="form-not-found">
@@ -51,6 +76,7 @@ export function RecipeFormPage() {
     const errs: Record<string, string> = {};
     if (!name.trim()) errs.name = '请输入菜名';
     if (!category) errs.category = '请选择分类';
+    if (tags.length === 0) errs.tags = '请至少选择一个标签';
     const validIngredients = ingredients.filter((i) => i.name.trim());
     if (validIngredients.length === 0) errs.ingredients = '请至少添加一种食材';
     const validSteps = steps.filter((s) => s.text.trim());
@@ -100,19 +126,18 @@ export function RecipeFormPage() {
 
   return (
     <div className="recipe-form-page">
-      {/* Form Header */}
+      {/* Form Header (matching RecipeDetailPage topbar) */}
       <div className="form-header">
         <button
           className="btn btn-ghost"
           onClick={() => navigate(isEdit ? `/recipes/${id}` : '/recipes')}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           返回
         </button>
-        <h1 className="form-title">{isEdit ? '编辑菜谱' : '添加菜谱'}</h1>
-        <button className="btn btn-primary form-save-btn" onClick={handleSave}>
+        <button className="btn btn-secondary btn-sm form-save-btn" onClick={handleSave}>
           保存菜谱
         </button>
       </div>
@@ -152,8 +177,9 @@ export function RecipeFormPage() {
 
         {/* Tags */}
         <div className="form-section">
-          <label className="form-label">标签</label>
+          <label className="form-label">标签 <span className="form-required">*</span></label>
           <TagSelector selectedTags={tags} onChange={setTags} />
+          {errors.tags && <p className="form-error">{errors.tags}</p>}
         </div>
 
         {/* Ingredients */}
@@ -177,12 +203,17 @@ export function RecipeFormPage() {
         {/* Bottom Save Button (mobile-friendly) */}
         <div className="form-bottom-actions">
           <button
-            className="btn btn-secondary btn-block"
+            type="button"
+            className="form-pill-btn form-pill-btn-cancel"
             onClick={() => navigate(isEdit ? `/recipes/${id}` : '/recipes')}
           >
             取消
           </button>
-          <button className="btn btn-primary btn-block" onClick={handleSave}>
+          <button
+            type="button"
+            className="form-pill-btn form-pill-btn-save"
+            onClick={handleSave}
+          >
             保存菜谱
           </button>
         </div>

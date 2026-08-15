@@ -238,7 +238,7 @@ export function IngredientFormPage() {
           </button>
           {isEdit && (
             <button
-              className="btn btn-ghost btn-sm detail-delete-btn"
+              className="btn detail-delete-btn"
               onClick={() => setConfirmDelete(true)}
             >
               删除

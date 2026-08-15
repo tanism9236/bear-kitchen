@@ -81,22 +81,24 @@ export function IngredientsPage() {
       </div>
 
       {/* Category Filter (横排胶囊，与菜谱首页一致) */}
-      <div className="filter-bar">
-        <button
-          className={`filter-chip ${categoryFilter === 'all' ? 'active' : ''}`}
-          onClick={() => setCategoryFilter('all')}
-        >
-          全部
-        </button>
-        {categories.map((cat) => (
+      <div className="filter-bar-wrap">
+        <div className="filter-bar">
           <button
-            key={cat.id}
-            className={`filter-chip ${categoryFilter === cat.id ? 'active' : ''}`}
-            onClick={() => setCategoryFilter(cat.id)}
+            className={`filter-chip ${categoryFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setCategoryFilter('all')}
           >
-            {cat.name}
+            全部
           </button>
-        ))}
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              className={`filter-chip ${categoryFilter === cat.id ? 'active' : ''}`}
+              onClick={() => setCategoryFilter(cat.id)}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {total === 0 ? (
@@ -137,7 +139,9 @@ export function IngredientsPage() {
       )}
 
       <Link to="/ingredients/new" className="fab-add" title="添加食材" aria-label="添加食材">
-        +
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
       </Link>
     </div>
   );
