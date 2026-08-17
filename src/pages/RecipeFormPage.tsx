@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRecipes } from '@/hooks/useRecipes';
 import { useToast } from '@/components/Toast';
+import { BackButton } from '@/components/BackButton';
+import { useAppNav } from '@/navigation/NavigationProvider';
 import { CategorySelector } from '@/components/CategorySelector';
 import { CoverImageUploader } from '@/components/CoverImageUploader';
 import { TagSelector } from '@/components/TagSelector';
@@ -14,6 +16,7 @@ export function RecipeFormPage() {
   const { id } = useParams<{ id: string }>();
   const isEdit = !!id;
   const navigate = useNavigate();
+  const { goBack } = useAppNav();
   const { recipes, loading, addRecipe, updateRecipe } = useRecipes();
   const { showToast } = useToast();
 
@@ -116,11 +119,12 @@ export function RecipeFormPage() {
     if (isEdit && id) {
       updateRecipe(id, data);
       showToast('菜谱已更新');
-      navigate(`/recipes/${id}`);
+      // replace 回详情页：导航栈自动截断回原详情层，返回行为保持不变
+      navigate(`/recipes/${id}`, { replace: true });
     } else {
       const recipe = addRecipe(data);
       showToast('菜谱已添加');
-      navigate(`/recipes/${recipe.id}`);
+      navigate(`/recipes/${recipe.id}`, { replace: true });
     }
   };
 
@@ -128,15 +132,7 @@ export function RecipeFormPage() {
     <div className="recipe-form-page">
       {/* Form Header (matching RecipeDetailPage topbar) */}
       <div className="form-header">
-        <button
-          className="btn btn-ghost"
-          onClick={() => navigate(isEdit ? `/recipes/${id}` : '/recipes')}
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          返回
-        </button>
+        <BackButton />
         <button className="btn btn-secondary btn-sm form-save-btn" onClick={handleSave}>
           保存菜谱
         </button>
@@ -205,7 +201,7 @@ export function RecipeFormPage() {
           <button
             type="button"
             className="form-pill-btn form-pill-btn-cancel"
-            onClick={() => navigate(isEdit ? `/recipes/${id}` : '/recipes')}
+            onClick={() => goBack('/recipes')}
           >
             取消
           </button>

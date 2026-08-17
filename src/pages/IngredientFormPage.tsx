@@ -4,6 +4,7 @@ import type { InventoryUnit, InventoryBatch } from '@/types';
 import { DEFAULT_INVENTORY_UNITS } from '@/types';
 import { useInventory } from '@/hooks/useInventory';
 import { useToast } from '@/components/Toast';
+import { BackButton } from '@/components/BackButton';
 import { IngredientCategoryManager } from '@/components/IngredientCategoryManager';
 import { addOrMergeIngredient } from '@/utils/inventoryStorage';
 import { normalizeBatches } from '@/utils/batches';
@@ -35,6 +36,8 @@ export function IngredientFormPage() {
   const [expiryDate, setExpiryDate] = useState('');
   // 编辑模式：批次列表（每批自己的数量 + 到期日）
   const [batches, setBatches] = useState<BatchDraft[]>([]);
+  // 用户是否明确选过单位。默认 '个' 只是占位，未确认前切换单位不换算数量。
+  const [unitTouched, setUnitTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(!isEdit);
   const [catManagerOpen, setCatManagerOpen] = useState(false);
@@ -54,6 +57,8 @@ export function IngredientFormPage() {
           expiryDate: b.expiryDate ?? '',
         }))
       );
+      // 编辑模式的单位来自已有数据，视为已确认
+      setUnitTouched(true);
       setLoaded(true);
     }
   }, [isEdit, existing]);
@@ -71,10 +76,16 @@ export function IngredientFormPage() {
     [unit]
   );
 
-  // 编辑时切换单位：同量纲自动换算数量；不同量纲清空数量要求重填，
-  // 避免 "1500 ml" 直接变成 "1500 L" 的含义丢失。
+  // 切换单位：用户明确选过单位后才做换算；默认占位单位 '个' 未被确认时，
+  // 直接切换（用户先填数量再选单位是正常流程，不该报「无法换算」）。
   const handleUnitChange = (next: InventoryUnit) => {
     if (next === unit) return;
+    if (!unitTouched) {
+      setUnitTouched(true);
+      setUnit(next);
+      setError(null);
+      return;
+    }
     if (isEdit) {
       // 编辑模式：逐批换算，任何一批无法换算则该批清空要求重填
       let anyFailed = false;
@@ -225,9 +236,7 @@ export function IngredientFormPage() {
   return (
     <div className="inv-form-page">
       <div className="detail-topbar">
-        <button className="btn btn-ghost" onClick={() => navigate('/ingredients')}>
-          ← 食材
-        </button>
+        <BackButton fallback="/ingredients">← 食材</BackButton>
         <div className="detail-topbar-actions">
           <button
             className="btn btn-secondary btn-sm form-save-btn"

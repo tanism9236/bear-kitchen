@@ -1,20 +1,28 @@
 import { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useRecipes } from '@/hooks/useRecipes';
+import { useInventory } from '@/hooks/useInventory';
 import { useToast } from '@/components/Toast';
+import { BackButton } from '@/components/BackButton';
+import { useAppNav, usePageLabel } from '@/navigation/NavigationProvider';
 import { getTagById } from '@/utils/storage';
+import { checkStock, stockStatusLabel } from '@/utils/stockCheck';
 import { RecipeCover } from '@/components/RecipeCover';
 import { TagChip } from '@/components/TagChip';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 export function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { goBack } = useAppNav();
   const { recipes, deleteRecipe } = useRecipes();
+  const { items: inventoryItems, loading: inventoryLoading } = useInventory();
   const { showToast } = useToast();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const recipe = recipes.find((r) => r.id === id);
+
+  // 注册页面显示名：被返回时按钮显示「← 菜名」
+  usePageLabel(recipe?.name);
 
   if (!recipe) {
     return (
@@ -34,21 +42,19 @@ export function RecipeDetailPage() {
   const handleDelete = () => {
     deleteRecipe(recipe.id);
     showToast('菜谱已删除');
-    navigate('/recipes');
+    goBack('/recipes');
   };
 
   return (
     <div className="recipe-detail-page">
       {/* Top Bar */}
       <div className="detail-topbar">
-        <button className="btn btn-ghost" onClick={() => navigate('/recipes')}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          菜谱
-        </button>
+        <BackButton fallback="/recipes" label="菜谱" />
         <div className="detail-topbar-actions">
-          <Link to={`/recipes/${recipe.id}/edit`} className="btn btn-secondary btn-sm">
+          <Link
+            to={`/recipes/${recipe.id}/edit`}
+            className="btn btn-secondary btn-sm"
+          >
             编辑
           </Link>
           <button
@@ -85,14 +91,26 @@ export function RecipeDetailPage() {
           <div className="detail-section">
             <h2 className="detail-section-title">食材</h2>
             <ul className="detail-ingredients">
-              {recipe.ingredients.map((ing) => (
-                <li key={ing.id} className="detail-ingredient-item">
-                  <span className="detail-ingredient-name">{ing.name}</span>
-                  <span className="detail-ingredient-amount">
-                    {ing.amount} {ing.unit}
-                  </span>
-                </li>
-              ))}
+              {recipe.ingredients.map((ing) => {
+                const stock = inventoryLoading
+                  ? null
+                  : checkStock(ing, inventoryItems);
+                return (
+                  <li key={ing.id} className="detail-ingredient-item">
+                    <div className="detail-ingredient-line">
+                      <span className="detail-ingredient-name">{ing.name}</span>
+                      <span className="detail-ingredient-amount">
+                        {ing.amount} {ing.unit}
+                      </span>
+                    </div>
+                    {stock && (
+                      <span className={`detail-stock-status status-${stock.kind}`}>
+                        {stockStatusLabel(stock)}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

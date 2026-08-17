@@ -30,7 +30,14 @@ export interface Ingredient {
  */
 export type InventoryUnit = string;
 
-export const DEFAULT_INVENTORY_UNITS: InventoryUnit[] = ['个', '罐', 'g', 'kg', 'ml', 'L', 'lb'];
+export const DEFAULT_INVENTORY_UNITS: InventoryUnit[] = [
+  // count
+  '个', '包', '盒', '罐', '瓶',
+  // weight
+  'g', 'kg', 'oz', 'lb',
+  // volume
+  'ml', 'L', 'fl oz',
+];
 
 /**
  * A stock batch: same ingredient can have multiple batches with different
@@ -87,3 +94,105 @@ export interface TagGroup {
   label: string;
   tags: string[]; // default tag names
 }
+
+// ===== V2.5 My Kitchen (家庭成员 / 营养目标) =====
+
+export type Gender = 'male' | 'female';
+
+export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active';
+
+/** Daily nutrition target (macros in grams). */
+export interface NutritionGoal {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+/** A kitchen/family member. First one is seeded as the Owner. */
+export interface Member {
+  id: string;
+  name: string;
+  /** e.g. 'Owner' / '成员' — display only, no permissions in V2.5. */
+  role: string;
+  gender: Gender;
+  age: number;
+  /** cm */
+  height: number;
+  /** kg */
+  weight: number;
+  activityLevel: ActivityLevel;
+  nutritionGoal: NutritionGoal;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ===== V3.0 Plan (家庭饮食计划) =====
+
+export type PlanType = 'daily' | 'weekly' | 'event';
+
+/** Fixed meal slots + free-form custom slots (e.g. 下午茶). */
+export type MealSlot = 'breakfast' | 'lunch' | 'dinner' | string;
+
+/**
+ * A meal item is either a recipe reference (can repeat across meals)
+ * or a custom food (饭团 / 外卖 / 预制食品).
+ */
+export type MealItem =
+  | {
+      id: string;
+      kind: 'recipe';
+      recipeId: string;
+      /** Display fallback when the referenced recipe was deleted. */
+      recipeName: string;
+      /** Recipe has no servings field yet — default 1. */
+      servings: number;
+    }
+  | {
+      id: string;
+      kind: 'custom';
+      name: string;
+      note?: string;
+    };
+
+/** One meal on one day (breakfast/lunch/dinner/custom slot). */
+export interface Meal {
+  id: string;
+  /** Local date, YYYY-MM-DD. */
+  date: string;
+  slot: MealSlot;
+  /** Who eats this meal (member ids, optional). */
+  memberIds: string[];
+  items: MealItem[];
+}
+
+export interface Plan {
+  id: string;
+  type: PlanType;
+  title: string;
+  /** Local date YYYY-MM-DD — the day (daily/event) or week start (weekly). */
+  startDate: string;
+  /** Weekly only: inclusive end of the 7-day range. */
+  endDate?: string;
+  /**
+   * Plan-level members. Meals with empty memberIds inherit these.
+   * Optional so existing stored plans load without migration.
+   */
+  memberIds?: string[];
+  /** A plan can be created empty and filled gradually. */
+  meals: Meal[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const MEAL_SLOT_LABELS: Record<string, string> = {
+  breakfast: '早餐',
+  lunch: '午餐',
+  dinner: '晚餐',
+};
+
+export const PLAN_TYPE_LABELS: Record<PlanType, string> = {
+  daily: '单日计划',
+  weekly: '一周计划',
+  event: '聚餐计划',
+};

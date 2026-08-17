@@ -631,6 +631,13 @@
   margin-bottom: var(--space-sm);
 }
 
+/* 对话框标题（思源宋体 Bold 暖棕） */
+.dialog-title-serif {
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', serif;
+  font-weight: 700;
+  color: #AD723B;
+}
+
 .confirm-dialog-message {
   font-size: 14px;
   color: var(--text-secondary);
@@ -1314,6 +1321,16 @@
   align-items: center;
 }
 
+/* 顶部页内文字（如「计划」）—— 思源宋体 Bold 18px + 暖棕 #AD723B */
+.detail-topbar-title {
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #AD723B;
+  flex: 1;
+  padding-left: 4px;
+}
+
 /* 编辑按钮：白底 + #EFECE6 边框 + 999px 胶囊 + 32px 高 + 思源黑体 14px */
 .detail-topbar .btn-secondary {
   height: 32px;
@@ -1422,12 +1439,19 @@
 
 .detail-ingredient-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
 }
 
 .detail-ingredient-item:last-child {
+}
+
+/* V2.1: name + amount on the first line, stock status on the second */
+.detail-ingredient-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .detail-ingredient-name {
@@ -1439,6 +1463,20 @@
 .detail-ingredient-amount {
   font-size: 14px;
   color: var(--text-secondary);
+}
+
+.detail-stock-status {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.detail-stock-status.status-sufficient {
+  color: #5E8C4A;
+}
+
+.detail-stock-status.status-insufficient {
+  color: #C07A2A;
 }
 
 .detail-steps {
@@ -1696,7 +1734,7 @@
   }
 
   .app-main {
-    padding-top: var(--space-lg);
+    padding-top: var(--space-xl);
     padding-bottom: 80px; /* space for bottom nav */
   }
 
@@ -2322,4 +2360,724 @@
   .inv-form {
     padding: var(--space-md);
   }
+}
+
+/* ===== V2.5 My Kitchen（我的厨房）===== */
+.myk-section {
+  margin-top: var(--space-lg);
+}
+
+.myk-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.myk-add-btn {
+  border-radius: 999px;
+}
+
+.myk-member-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.myk-member-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background-color: #F5F2ED;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  transition: border-color var(--transition), background-color var(--transition);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.myk-member-card.active {
+  background-color: #F5EBE1;
+  border-color: #AD723B;
+}
+
+.myk-member-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.myk-member-card.active .myk-member-name {
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', serif;
+  font-weight: 700;
+}
+
+.myk-member-role {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background-color: rgba(244, 239, 236, 0.9);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.myk-member-card.active .myk-member-role {
+  background-color: #AD723B;
+  color: #fff;
+}
+
+.myk-detail-card {
+  background-color: #F5F2ED;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.myk-detail-card .detail-section-title {
+  margin-bottom: var(--space-sm);
+}
+
+.myk-goal-title {
+  margin-top: var(--space-lg);
+}
+
+.myk-segmented {
+  display: flex;
+  gap: 8px;
+}
+
+.myk-segment {
+  flex: 1;
+  height: 44px;
+  border-radius: 20px;
+  border: 1px solid #EFECE6;
+  background-color: #fff;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  box-sizing: border-box;
+}
+
+.myk-segment.active {
+  background-color: #AD723B;
+  border-color: #AD723B;
+  color: #fff;
+  font-weight: 500;
+}
+
+.myk-field-row {
+  display: flex;
+  gap: 8px;
+}
+
+.myk-field-row .form-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.myk-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%239E958C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.myk-goal-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--space-sm);
+}
+
+.myk-goal-actions .btn {
+  border-radius: 999px;
+}
+
+.myk-goal-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.myk-goal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.myk-goal-cell .form-label {
+  font-size: 12px;
+}
+
+.myk-goal-cell .input {
+  padding-right: 40px;
+}
+
+.myk-goal-unit {
+  position: absolute;
+  right: 14px;
+  bottom: 13px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.myk-goal-cell {
+  position: relative;
+}
+
+.myk-detail-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-lg);
+}
+
+.myk-save-btn {
+  min-width: 120px;
+}
+
+/* ===== My Kitchen 设置入口（与食材页分组列表同一设计语言） ===== */
+/* 与 .recipes-page / .ingredients-page 一致：居中 + 两侧留白 */
+.myk-page {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding-inline: var(--content-pad);
+}
+
+.myk-groups {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.myk-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.myk-row:last-child {
+  border-bottom: none;
+}
+
+.myk-row:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+}
+
+.myk-row:disabled {
+  cursor: default;
+}
+
+.myk-row-icon {
+  display: flex;
+  align-items: center;
+  color: #AD723B;
+  flex-shrink: 0;
+}
+
+.myk-row:disabled .myk-row-icon {
+  color: var(--text-tertiary);
+}
+
+.myk-row-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.myk-row:disabled .myk-row-label {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.myk-row-value {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.myk-row-chevron {
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+}
+
+.myk-row-soon {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  background-color: #EFECE6;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+/* ===== V3.0 Plan（饮食计划）===== */
+/* 与 .recipes-page 一致：居中 + 两侧留白 */
+.plan-page {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding-inline: var(--content-pad);
+}
+
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: var(--space-lg);
+}
+
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.plan-card:active {
+  transform: scale(0.98);
+}
+
+.plan-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.plan-card-meal-count {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.plan-card-title {
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.plan-card-dates {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.plan-type-chip {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background-color: rgba(244, 239, 236, 0.9);
+  color: #4A3E3D;
+}
+
+.plan-type-weekly {
+  background-color: #F5EBE1;
+  color: #AD723B;
+}
+
+.plan-type-daily {
+  background-color: rgba(244, 239, 236, 0.9);
+  color: #4A3E3D;
+}
+
+.plan-type-event {
+  background-color: #F6E3DC;
+  color: #B25B45;
+}
+
+/* 创建/编辑对话框（复用 confirm-dialog 语言，略宽 + 可滚动） */
+.plan-create-dialog {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 400px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+.plan-create-dialog .form-field {
+  margin-bottom: var(--space-md);
+}
+
+.plan-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plan-type-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid #EFECE6;
+  background-color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-sizing: border-box;
+}
+
+.plan-type-option.active {
+  background-color: #F5EBE1;
+  border-color: #AD723B;
+}
+
+.plan-type-option-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.plan-type-option-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.plan-date-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* ===== Plan 详情页 ===== */
+.plan-detail-page {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding-inline: var(--content-pad);
+}
+
+.plan-detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  margin: 6px 0 var(--space-lg);
+}
+
+.plan-detail-dates {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.plan-days {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.plan-day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+.plan-day-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-day-today {
+  font-size: 11px;
+  color: #AD723B;
+  background-color: #F5EBE1;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.plan-day-empty {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  padding: 4px 0 2px;
+}
+
+/* ===== 每日餐次行（V3.0：固定三餐 + 直达添加） ===== */
+.plan-slot-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-slot-row + .plan-slot-row {
+  margin-top: 12px;
+}
+
+.plan-slot-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.plan-slot-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.plan-slot-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-slot-add {
+  border: 1px dashed #D8CFC2;
+  background: none;
+  border-radius: 10px;
+  padding: 3px 12px;
+  font: inherit;
+  font-size: 12px;
+  color: #AD723B;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.plan-slot-add:active {
+  background-color: #F5EBE1;
+}
+
+.plan-slot-remove {
+  border: none;
+  background: none;
+  padding: 3px 6px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all var(--transition);
+}
+
+.plan-slot-remove:active {
+  background-color: rgba(217, 107, 107, 0.1);
+}
+
+.plan-slot-more {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 8px 0 0;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+/* 添加内容 dialog 的上下文行 */
+.plan-add-context {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin: -4px 0 12px;
+}
+
+/* Plan 层级成员设置 */
+.plan-member-setting {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.plan-member-setting-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.plan-meal-card {
+  background-color: #F5F2ED;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.plan-meal-members-line {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+
+.plan-meal-items {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.plan-meal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.plan-meal-item-name {
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+a.plan-meal-item-name {
+  color: var(--text);
+}
+
+.plan-meal-item-book {
+  color: #AD723B;
+  flex-shrink: 0;
+}
+
+.plan-meal-item-note {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.plan-meal-item-gone {
+  font-size: 11px;
+  color: #D96B6B;
+  background-color: #F6E3DC;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.plan-meal-item-remove {
+  border: none;
+  background: none;
+  padding: 0 4px;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.plan-meal-item-remove:hover {
+  color: #D96B6B;
+}
+
+/* 成员选择 chips */
+.plan-member-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.plan-member-chip {
+  border: 1px solid #EFECE6;
+  background-color: #fff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  box-sizing: border-box;
+}
+
+.plan-member-chip.active {
+  background-color: #AD723B;
+  border-color: #AD723B;
+  color: #fff;
+}
+
+/* 菜谱选择 */
+.plan-recipe-search {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.plan-recipe-search input {
+  width: 100%;
+  height: 44px;
+  padding: 0 46px 0 18px;
+  border: 1px solid #EFECE6;
+  border-radius: 999px;
+  background-color: #fff;
+  outline: none;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.plan-recipe-search input::placeholder {
+  color: #B5AFA4;
+}
+
+.plan-recipe-search input:focus {
+  border-color: #AD723B;
+  box-shadow: 0 0 0 3px rgba(173, 114, 59, 0.12);
+}
+
+.plan-recipe-search .search-icon {
+  left: auto;
+  right: 16px;
+  color: #B5AFA4;
+}
+
+.plan-recipe-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 45vh;
+  overflow-y: auto;
+}
+
+.plan-recipe-row {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  text-align: left;
+  padding: 12px 4px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-recipe-row:last-child {
+  border-bottom: none;
+}
+
+.plan-recipe-row:active {
+  color: #AD723B;
 }

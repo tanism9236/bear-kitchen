@@ -32,10 +32,20 @@ function IconIngredients() {
   );
 }
 
+function IconMy() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 21v-1a7 7 0 0 1 7-7h2a7 7 0 0 1 7 7v1" stroke="currentColor" />
+      <circle cx="12" cy="7" r="4" stroke="currentColor" />
+    </svg>
+  );
+}
+
 const navItems = [
   { to: '/recipes', label: '菜谱', icon: IconRecipes },
   { to: '/plan', label: '计划', icon: IconPlan },
   { to: '/ingredients', label: '食材', icon: IconIngredients },
+  { to: '/my', label: '我的', icon: IconMy },
 ];
 
 export function NavBar() {
